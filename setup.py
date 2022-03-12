@@ -8,18 +8,15 @@ from setuptools import setup, find_packages
 with open('README.rst') as f:
     readme = f.read()
 
-with open('LICENSE') as f:
-    license = f.read()
-
 setup(
-    name='sample',
+    name='Health',
     version='0.1.0',
-    description='Sample package for Python-Guide.org',
+    description='Tool to collect health data',
     long_description=readme,
-    author='Kenneth Reitz',
-    author_email='me@kennethreitz.com',
-    url='https://github.com/kennethreitz/samplemod',
-    license=license,
+    author='Erich Reitz',
+    author_email='erreitz@outlook.com',
+    url='https://github.com/Erich-Reitz/Health',
+    license='LICENSE.txt',
     packages=find_packages(exclude=('tests', 'docs'))
 )
 

@@ -1,10 +1,6 @@
-Sample Module Repository
+Health
 ========================
 
-This simple project is an example repo for Python projects.
+Tool to aggregate my fitness data
 
-`Learn more <http://www.kennethreitz.org/essays/repository-structure-and-python>`_.
-
----------------
-
-If you want to learn more about ``setup.py`` files, check out `this repository <https://github.com/kennethreitz/setup.py>`_.
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
