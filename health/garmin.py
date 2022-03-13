@@ -29,7 +29,6 @@ import logging
 import re
 from enum import Enum, auto
 from typing import Any, Dict
-import datetime
 
 # third party
 import cloudscraper
@@ -37,7 +36,7 @@ import cloudscraper
 # this package
 from health.data_models import BodyCompData
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 class ApiClient:
@@ -77,16 +76,16 @@ class ApiClient:
             total_headers.update(aditional_headers)
         url = self.url(addurl)
 
-        logger.debug("URL: %s", url)
-        logger.debug("Headers: %s", total_headers)
+        LOGGER.debug("URL: %s", url)
+        LOGGER.debug("Headers: %s", total_headers)
 
         try:
             response = self.session.get(url, headers=total_headers, params=params)
             response.raise_for_status()
-            # logger.debug("Response: %s", response.content)
+            # LOGGER.debug("Response: %s", response.content)
             return response
         except Exception as err:
-            logger.debug("Response in exception: %s", response.content)
+            LOGGER.debug("Response in exception: %s", response.content)
             if response.status_code == 429:
                 raise GarminConnectTooManyRequestsError("Too many requests") from err
             if response.status_code == 401:
@@ -103,19 +102,19 @@ class ApiClient:
             total_headers.update(aditional_headers)
         url = self.url(addurl)
 
-        logger.debug("URL: %s", url)
-        logger.debug("Headers: %s", total_headers)
-        logger.debug("Data: %s", data)
+        LOGGER.debug("URL: %s", url)
+        LOGGER.debug("Headers: %s", total_headers)
+        LOGGER.debug("Data: %s", data)
 
         try:
             response = self.session.post(
                 url, headers=total_headers, params=params, data=data
             )
             response.raise_for_status()
-            # logger.debug("Response: %s", response.content)
+            # LOGGER.debug("Response: %s", response.content)
             return response
         except Exception as err:
-            logger.debug("Response in exception: %s", response.content)
+            LOGGER.debug("Response in exception: %s", response.content)
             if response.status_code == 429:
                 raise GarminConnectTooManyRequestsError("Too many requests") from err
             if response.status_code == 401:
@@ -239,7 +238,7 @@ class Garmin:
     def login(self):
         """Login to Garmin Connect."""
 
-        logger.debug("login: %s %s", self.username, self.password)
+        LOGGER.debug("login: %s %s", self.username, self.password)
         get_headers = {"Referer": self.garmin_connect_login_url}
         params = {
             "service": self.modern_rest_client.url(),
@@ -283,13 +282,13 @@ class Garmin:
 
         found = re.search(r"name=\"_csrf\" value=\"(\w*)", response.text, re.M)
         if not found:
-            logger.error("_csrf not found  (%d)", response.status_code)
+            LOGGER.error("_csrf not found  (%d)", response.status_code)
             return False
 
         csrf = found.group(1)
         referer = response.url
-        logger.debug("_csrf found: %s", csrf)
-        logger.debug("Referer: %s", referer)
+        LOGGER.debug("_csrf found: %s", csrf)
+        LOGGER.debug("Referer: %s", referer)
 
         data = {
             "username": self.username,
@@ -308,7 +307,7 @@ class Garmin:
 
         found = re.search(r"\?ticket=([\w-]*)", response.text, re.M)
         if not found:
-            logger.error("Login ticket not found (%d).", response.status_code)
+            LOGGER.error("Login ticket not found (%d).", response.status_code)
             return False
         params = {"ticket": found.group(1)}
 
@@ -316,14 +315,14 @@ class Garmin:
 
         user_prefs = self.__get_json(response.text, "VIEWER_USERPREFERENCES")
         self.display_name = user_prefs["displayName"]
-        logger.debug("Display name is %s", self.display_name)
+        LOGGER.debug("Display name is %s", self.display_name)
 
         self.unit_system = user_prefs["measurementSystem"]
-        logger.debug("Unit system is %s", self.unit_system)
+        LOGGER.debug("Unit system is %s", self.unit_system)
 
         social_profile = self.__get_json(response.text, "VIEWER_SOCIAL_PROFILE")
         self.full_name = social_profile["fullName"]
-        logger.debug("Fullname is %s", self.full_name)
+        LOGGER.debug("Fullname is %s", self.full_name)
 
         return True
 
@@ -347,7 +346,7 @@ class Garmin:
 
         url = f"{self.garmin_connect_daily_summary_url}/{self.display_name}"
         params = {"calendarDate": str(cdate)}
-        logger.debug("Requesting user summary")
+        LOGGER.debug("Requesting user summary")
 
         response = self.modern_rest_client.get(url, params=params).json()
 
@@ -361,7 +360,7 @@ class Garmin:
 
         url = f"{self.garmin_connect_user_summary_chart}/{self.display_name}"
         params = {"date": str(cdate)}
-        logger.debug("Requesting steps data")
+        LOGGER.debug("Requesting steps data")
 
         return self.modern_rest_client.get(url, params=params).json()
 
@@ -370,7 +369,7 @@ class Garmin:
 
         url = f"{self.garmin_connect_heartrates_daily_url}/{self.display_name}"
         params = {"date": str(cdate)}
-        logger.debug("Requesting heart rates")
+        LOGGER.debug("Requesting heart rates")
 
         return self.modern_rest_client.get(url, params=params).json()
 
@@ -389,7 +388,7 @@ class Garmin:
             enddate = startdate
         url = self.garmin_connect_weight_url
         params = {"startDate": str(startdate), "endDate": str(enddate)}
-        logger.debug("Requesting body composition")
+        LOGGER.debug("Requesting body composition")
 
         data = self.modern_rest_client.get(url, params=params).json()
         weight_list = data["dateWeightList"]
@@ -416,7 +415,7 @@ class Garmin:
         """Return available max metric data for 'cdate' format 'YYYY-mm-dd'."""
 
         url = f"{self.garmin_connect_metrics_url}/{cdate}"
-        logger.debug("Requestng max metrics")
+        LOGGER.debug("Requestng max metrics")
 
         return self.modern_rest_client.get(url).json()
 
@@ -424,7 +423,7 @@ class Garmin:
         """Return available hydration data 'cdate' format 'YYYY-mm-dd'."""
 
         url = f"{self.garmin_connect_daily_hydration_url}/{cdate}"
-        logger.debug("Requesting hydration data")
+        LOGGER.debug("Requesting hydration data")
 
         return self.modern_rest_client.get(url).json()
 
@@ -432,7 +431,7 @@ class Garmin:
         """Return available respiration data 'cdate' format 'YYYY-mm-dd'."""
 
         url = f"{self.garmin_connect_daily_respiration_url}/{cdate}"
-        logger.debug("Requesting respiration data")
+        LOGGER.debug("Requesting respiration data")
 
         return self.modern_rest_client.get(url).json()
 
@@ -440,7 +439,7 @@ class Garmin:
         """Return available SpO2 data 'cdate' format 'YYYY-mm-dd'."""
 
         url = f"{self.garmin_connect_daily_spo2_url}/{cdate}"
-        logger.debug("Requesting SpO2 data")
+        LOGGER.debug("Requesting SpO2 data")
 
         return self.modern_rest_client.get(url).json()
 
@@ -448,7 +447,7 @@ class Garmin:
         """Return personal records for current user."""
 
         url = f"{self.garmin_connect_personal_record_url}/{self.display_name}"
-        logger.debug("Requesting personal records for user")
+        LOGGER.debug("Requesting personal records for user")
 
         return self.modern_rest_client.get(url).json()
 
@@ -456,7 +455,7 @@ class Garmin:
         """Return earned badges for current user."""
 
         url = self.garmin_connect_earned_badges_url
-        logger.debug("Requesting earned badges for user")
+        LOGGER.debug("Requesting earned badges for user")
 
         return self.modern_rest_client.get(url).json()
 
@@ -465,7 +464,7 @@ class Garmin:
 
         url = self.garmin_connect_adhoc_challenges_url
         params = {"start": str(start), "limit": str(limit)}
-        logger.debug("Requesting adhoc challenges for user")
+        LOGGER.debug("Requesting adhoc challenges for user")
 
         return self.modern_rest_client.get(url, params=params).json()
 
@@ -474,7 +473,7 @@ class Garmin:
 
         url = self.garmin_connect_badge_challenges_url
         params = {"start": str(start), "limit": str(limit)}
-        logger.debug("Requesting badge challenges for user")
+        LOGGER.debug("Requesting badge challenges for user")
 
         return self.modern_rest_client.get(url, params=params).json()
 
@@ -484,7 +483,7 @@ class Garmin:
         url = f"{self.garmin_connect_daily_sleep_url}/{self.display_name}"
         params = {"date": str(cdate), "nonSleepBufferMinutes": 60}
 
-        logger.debug("Requesting sleep data")
+        LOGGER.debug("Requesting sleep data")
 
         return self.modern_rest_client.get(url, params=params).json()
 
@@ -492,7 +491,7 @@ class Garmin:
         """Return stress data for current user."""
 
         url = f"{self.garmin_connect_daily_stress_url}/{cdate}"
-        logger.debug("Requesting stress data")
+        LOGGER.debug("Requesting stress data")
 
         return self.modern_rest_client.get(url).json()
 
@@ -501,7 +500,7 @@ class Garmin:
 
         params = {"fromDate": str(cdate), "untilDate": str(cdate), "metricId": 60}
         url = f"{self.garmin_connect_rhr}/{self.display_name}"
-        logger.debug("Requesting resting heartrate data")
+        LOGGER.debug("Requesting resting heartrate data")
 
         return self.modern_rest_client.get(url, params=params).json()
 
@@ -509,7 +508,7 @@ class Garmin:
         """Return available devices for the current user account."""
 
         url = self.garmin_connect_devices_url
-        logger.debug("Requesting devices")
+        LOGGER.debug("Requesting devices")
 
         return self.modern_rest_client.get(url).json()
 
@@ -517,14 +516,14 @@ class Garmin:
         """Return device settings for device with 'device_id'."""
 
         url = f"{self.garmin_connect_device_url}/device-info/settings/{device_id}"
-        logger.debug("Requesting device settings")
+        LOGGER.debug("Requesting device settings")
 
         return self.modern_rest_client.get(url).json()
 
     def get_device_alarms(self) -> Dict[str, Any]:
         """Get list of active alarms from all devices."""
 
-        logger.debug("Requesting device alarms")
+        LOGGER.debug("Requesting device alarms")
 
         alarms = []
         devices = self.get_devices()
@@ -537,7 +536,7 @@ class Garmin:
         """Return device last used."""
 
         url = f"{self.garmin_connect_device_url}/mylastused"
-        logger.debug("Requesting device last used")
+        LOGGER.debug("Requesting device last used")
 
         return self.modern_rest_client.get(url).json()
 
@@ -546,7 +545,7 @@ class Garmin:
 
         url = self.garmin_connect_activities
         params = {"start": str(start), "limit": str(limit)}
-        logger.debug("Requesting activities")
+        LOGGER.debug("Requesting activities")
 
         return self.modern_rest_client.get(url, params=params).json()
 
@@ -588,7 +587,7 @@ class Garmin:
         print(f"Requesting activities by date from {startdate} to {enddate}")
         while True:
             params["start"] = str(start)
-            logger.debug(f"Requesting activities {start} to {start+limit}")
+            LOGGER.debug(f"Requesting activities {start} to {start+limit}")
             act = self.modern_rest_client.get(url, params=params).json()
             if act:
                 activities.extend(act)
@@ -625,7 +624,7 @@ class Garmin:
             raise ValueError(f"Unexpected value {dl_fmt} for dl_fmt")
         url = urls[dl_fmt]
 
-        logger.debug("Downloading activities from %s", url)
+        LOGGER.debug("Downloading activities from %s", url)
 
         return self.modern_rest_client.get(url).content
 
@@ -634,7 +633,7 @@ class Garmin:
 
         activity_id = str(activity_id)
         url = f"{self.garmin_connect_activity}/{activity_id}/splits"
-        logger.debug("Requesting splits for activity id %s", activity_id)
+        LOGGER.debug("Requesting splits for activity id %s", activity_id)
 
         return self.modern_rest_client.get(url).json()
 
@@ -643,7 +642,7 @@ class Garmin:
 
         activity_id = str(activity_id)
         url = f"{self.garmin_connect_activity}/{activity_id}/split_summaries"
-        logger.debug("Requesting split summaries for activity id %s", activity_id)
+        LOGGER.debug("Requesting split summaries for activity id %s", activity_id)
 
         return self.modern_rest_client.get(url).json()
 
@@ -652,7 +651,7 @@ class Garmin:
 
         activity_id = str(activity_id)
         url = f"{self.garmin_connect_activity}/{activity_id}/weather"
-        logger.debug("Requesting weather for activity id %s", activity_id)
+        LOGGER.debug("Requesting weather for activity id %s", activity_id)
 
         return self.modern_rest_client.get(url).json()
 
@@ -661,7 +660,7 @@ class Garmin:
 
         activity_id = str(activity_id)
         url = f"{self.garmin_connect_activity}/{activity_id}/hrTimeInZones"
-        logger.debug("Requesting split summaries for activity id %s", activity_id)
+        LOGGER.debug("Requesting split summaries for activity id %s", activity_id)
 
         return self.modern_rest_client.get(url).json()
 
@@ -671,7 +670,7 @@ class Garmin:
         activity_id = str(activity_id)
 
         url = f"{self.garmin_connect_activity}/{activity_id}"
-        logger.debug("Requesting self evaluation data for activity id %s", activity_id)
+        LOGGER.debug("Requesting self evaluation data for activity id %s", activity_id)
 
         return self.modern_rest_client.get(url).json()
 
@@ -681,7 +680,7 @@ class Garmin:
         activity_id = str(activity_id)
         params = {"maxChartSize": str(maxchart), "maxPolylineSize": str(maxpoly)}
         url = f"{self.garmin_connect_activity}/{activity_id}/details"
-        logger.debug("Requesting details for activity id %s", activity_id)
+        LOGGER.debug("Requesting details for activity id %s", activity_id)
 
         return self.modern_rest_client.get(url, params=params).json()
 
@@ -691,7 +690,7 @@ class Garmin:
         activity_id = str(activity_id)
         params = {"activityId": str(activity_id)}
         url = self.garmin_connect_gear
-        logger.debug("Requesting gear for activity_id %s", activity_id)
+        LOGGER.debug("Requesting gear for activity_id %s", activity_id)
 
         return self.modern_rest_client.get(url, params=params).json()
 

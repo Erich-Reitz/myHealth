@@ -23,7 +23,3 @@ class TestWeightGuru():
     def test_wg_num_to_float_raises(self, weight_guru):
         with pytest.raises(exceptions.UnknownBehavior):
             weight_guru._wg_num_to_float("1") 
-
-
-if __name__ == '__main__':
-    unittest.main()

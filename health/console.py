@@ -1,11 +1,10 @@
 # standard library
 import argparse
-from doctest import FAIL_FAST
 
-from health.exit_codes import EXIT_SUCCESS
 
 # this package
-from . import health
+from health import health
+from health.exit_codes import EXIT_SUCCESS
 
 
 def run():

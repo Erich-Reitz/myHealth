@@ -1,5 +1,6 @@
+"""Main logic for tool"""
+
 # standard library
-from codeop import CommandCompiler
 import json
 import datetime
 import dataclasses
@@ -13,6 +14,7 @@ from health.plotting import Plotting
 from health.exit_codes import EXIT_SUCCESS
 
 
+# pylint: disable=E0202
 class EnhancedJSONEncoder(json.JSONEncoder):
     def default(self, o):
         if dataclasses.is_dataclass(o):
