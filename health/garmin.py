@@ -36,6 +36,7 @@ import cloudscraper
 
 # this package
 from health.data_models import BodyCompData
+
 logger = logging.getLogger(__name__)
 
 
@@ -45,7 +46,6 @@ class ApiClient:
     default_headers = {
         # 'User-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/535.2 (KHTML, like Gecko) Chrome/15.0.874.121 Safari/535.2'
         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:66.0) Gecko/20100101 Firefox/66.0"
-
     }
 
     def __init__(self, session, baseurl, headers=None, aditional_headers=None):
@@ -165,9 +165,7 @@ class Garmin:
         self.garmin_connect_personal_record_url = (
             "proxy/personalrecord-service/personalrecord/prs"
         )
-        self.garmin_connect_earned_badges_url = (
-            "proxy/badge-service/badge/earned"
-        )
+        self.garmin_connect_earned_badges_url = "proxy/badge-service/badge/earned"
         self.garmin_connect_adhoc_challenges_url = (
             "proxy/adhocchallenge-service/adHocChallenge/historical"
         )
@@ -177,7 +175,9 @@ class Garmin:
         self.garmin_connect_daily_sleep_url = (
             "proxy/wellness-service/wellness/dailySleepData"
         )
-        self.garmin_connect_daily_stress_url = "proxy/wellness-service/wellness/dailyStress"
+        self.garmin_connect_daily_stress_url = (
+            "proxy/wellness-service/wellness/dailyStress"
+        )
 
         self.garmin_connect_rhr = "proxy/userstats-service/wellness/daily"
 
@@ -204,7 +204,6 @@ class Garmin:
         self.garmin_connect_kml_download = "proxy/download-service/export/kml/activity"
         self.garmin_connect_csv_download = "proxy/download-service/export/csv/activity"
         self.garmin_connect_gear = "proxy/gear-service/gear/filterGear"
-
 
         self.garmin_connect_logout = "auth/logout/?url="
 
@@ -347,9 +346,7 @@ class Garmin:
         """Return user activity summary for 'cdate' format 'YYYY-mm-dd'."""
 
         url = f"{self.garmin_connect_daily_summary_url}/{self.display_name}"
-        params = {
-            "calendarDate": str(cdate),
-        }
+        params = {"calendarDate": str(cdate)}
         logger.debug("Requesting user summary")
 
         response = self.modern_rest_client.get(url, params=params).json()
@@ -363,9 +360,7 @@ class Garmin:
         """Fetch available steps data 'cDate' format 'YYYY-mm-dd'."""
 
         url = f"{self.garmin_connect_user_summary_chart}/{self.display_name}"
-        params = {
-            "date": str(cdate),
-        }
+        params = {"date": str(cdate)}
         logger.debug("Requesting steps data")
 
         return self.modern_rest_client.get(url, params=params).json()
@@ -374,9 +369,7 @@ class Garmin:
         """Fetch available heart rates data 'cDate' format 'YYYY-mm-dd'."""
 
         url = f"{self.garmin_connect_heartrates_daily_url}/{self.display_name}"
-        params = {
-            "date": str(cdate),
-        }
+        params = {"date": str(cdate)}
         logger.debug("Requesting heart rates")
 
         return self.modern_rest_client.get(url, params=params).json()
@@ -399,28 +392,26 @@ class Garmin:
         logger.debug("Requesting body composition")
 
         data = self.modern_rest_client.get(url, params=params).json()
-        weight_list = data['dateWeightList']
+        weight_list = data["dateWeightList"]
         body_history = []
         for entry in weight_list:
             body_data: BodyCompData = self._parse_body_comp_entry(entry)
             body_history.append(body_data)
-        
+
         return body_history
 
     @staticmethod
     def _parse_body_comp_entry(entry):
-        weight = Garmin._gm_num_to_lbs_float(entry['weight'])
-        date = entry['calendarDate']
+        weight = Garmin._gm_num_to_lbs_float(entry["weight"])
+        date = entry["calendarDate"]
         return BodyCompData(weight=weight, date=date)
-    
+
     @staticmethod
     def _gm_num_to_lbs_float(num):
-        kilograms = num/1000
-        lbs = kilograms*2.2046
+        kilograms = num / 1000
+        lbs = kilograms * 2.2046
         return lbs
 
-
-    
     def get_max_metrics(self, cdate: str) -> Dict[str, Any]:
         """Return available max metric data for 'cdate' format 'YYYY-mm-dd'."""
 
@@ -562,7 +553,7 @@ class Garmin:
     def get_last_activity(self):
         """Return last activity."""
 
-        activities = self.get_activities(0,1)
+        activities = self.get_activities(0, 1)
         if activities:
             return activities[-1]
 
@@ -585,8 +576,12 @@ class Garmin:
         # mimicking the behavior of the web interface that fetches 20 activities at a time
         # and automatically loads more on scroll
         url = self.garmin_connect_activities
-        params = {"startDate": str(startdate), "endDate": str(enddate),
-                  "start": str(start), "limit": str(limit) }
+        params = {
+            "startDate": str(startdate),
+            "endDate": str(enddate),
+            "start": str(start),
+            "limit": str(limit),
+        }
         if activitytype:
             params["activityType"] = str(activitytype)
 
@@ -684,23 +679,17 @@ class Garmin:
         """Return activity details."""
 
         activity_id = str(activity_id)
-        params = {
-            "maxChartSize": str(maxchart),
-            "maxPolylineSize": str(maxpoly),
-        }
+        params = {"maxChartSize": str(maxchart), "maxPolylineSize": str(maxpoly)}
         url = f"{self.garmin_connect_activity}/{activity_id}/details"
         logger.debug("Requesting details for activity id %s", activity_id)
 
         return self.modern_rest_client.get(url, params=params).json()
 
-
     def get_activity_gear(self, activity_id):
         """Return gears used for activity id."""
 
         activity_id = str(activity_id)
-        params = {
-            "activityId": str(activity_id),
-        }
+        params = {"activityId": str(activity_id)}
         url = self.garmin_connect_gear
         logger.debug("Requesting gear for activity_id %s", activity_id)
 

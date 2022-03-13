@@ -10,7 +10,6 @@ from health.data_models import BodyCompData
 from health.exceptions import UnknownBehavior
 
 
-
 class WeightGurus:
     def __init__(self, username, password):
         self.login_data = {"email": username, "password": password, "web": True}
