@@ -4,5 +4,12 @@ init:
 run:
 	python -m health.main $(ARGS)
 
+format:
+	black health/
+
+lint:
+	pylint health/
+
 test:
-	nosetests tests
+	pytest --cov-report term-missing --cov=health tests/
+

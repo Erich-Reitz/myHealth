@@ -1,20 +1,19 @@
 # standard library
 import argparse
-from doctest import FAIL_FAST
 
-from health.exit_codes import EXIT_SUCCESS
 
 # this package
-from . import health
+from health import health
+from health.exit_codes import EXIT_SUCCESS
 
 
 def run():
     args = _parse_args()
-    
+
     exit_code = health.health(args)
     if exit_code == EXIT_SUCCESS:
         print("exiting sucessfully")
-    
+
     return EXIT_SUCCESS
 
 
@@ -23,7 +22,7 @@ def _parse_args():
     parser.add_argument(
         "--pull",
         required=False,
-        nargs='?',
+        nargs="?",
         default=False,
         const=True,
         choices=["body-comp, activites"],
@@ -32,10 +31,10 @@ def _parse_args():
     parser.add_argument(
         "--plot",
         required=False,
-        nargs='?',
-        const=True,
+        nargs="?",
+        const="weight",
         default=False,
-        choices=["body-comp, activites"],
+        choices=["weight", "activites"],
         help="pull and health information",
     )
     args = parser.parse_args()
