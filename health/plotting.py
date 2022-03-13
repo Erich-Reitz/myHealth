@@ -8,7 +8,7 @@ import pandas as pd
 class Plotting():
 
     @staticmethod
-    def plot_body_comp():
+    def plot_weight():
         with open("body-comp.json") as body_comp:
             body_comp = json.load(body_comp)
         
@@ -20,4 +20,6 @@ class Plotting():
         weight = df["weight"]
 
         plt.plot(date, weight)
+        plt.ylabel("Weight (Lbs)")
+        plt.xlabel("Date Y/M")
         plt.show()

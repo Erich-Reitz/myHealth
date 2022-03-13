@@ -33,9 +33,9 @@ def _parse_args():
         "--plot",
         required=False,
         nargs='?',
-        const=True,
+        const="weight",
         default=False,
-        choices=["body-comp, activites"],
+        choices=["weight", "activites"],
         help="pull and health information",
     )
     args = parser.parse_args()

@@ -1,4 +1,5 @@
 # standard library
+from codeop import CommandCompiler
 import json
 import datetime
 import dataclasses
@@ -28,8 +29,10 @@ class Health:
             json_file.write(json.dumps(body_comp_data, cls=EnhancedJSONEncoder))
 
 
-    def plot(self):
-        Plotting.plot_body_comp()
+    def plot(self, command):
+        if command == 'weight':
+            Plotting.plot_weight()
+
 
         
     def _get_body_comp_data(self) -> list:
@@ -67,8 +70,7 @@ def health(args):
         health.pull()
 
     if args.plot:
-        print("plotting")
-        health.plot()
+        health.plot(args.plot)
 
 
     return EXIT_SUCCESS
