@@ -33,8 +33,8 @@ class Health:
             json_file.write(json.dumps(body_comp_data, cls=EnhancedJSONEncoder))
 
     def plot(self, command):
-        if command == "weight":
-            Plotting.plot_weight()
+        plotter = Plotting()
+        plotter.plot(command)
 
     def _get_body_comp_data(self) -> list:
         wg_comp_data = self._get_weight_gurus_body_comp_data()
