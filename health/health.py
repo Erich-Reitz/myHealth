@@ -1,27 +1,38 @@
 # standard library
 import json
 import datetime
-
+import dataclasses
 
 # third party
 
 # this package
 from health.weight_gurus import WeightGurus
 from health.garmin import Garmin
+from health.plotting import Plotting
+from health.exit_codes import EXIT_SUCCESS
 
+class EnhancedJSONEncoder(json.JSONEncoder):
+        def default(self, o):
+            if dataclasses.is_dataclass(o):
+                return dataclasses.asdict(o)
+            return super().default(o)
 
 class Health:
     def __init__(self, user_info) -> None:
         self.user_info = user_info
 
-    def pull_info(self):
+    def pull(self):
         body_comp_data = self._get_body_comp_data()
-        for data in body_comp_data:
-            print(data)
+        body_comp_data.sort(key = lambda body_comp: body_comp.date, reverse=False)
+        with open("body-comp.json", "w+") as json_file:
+            json_file.write(json.dumps(body_comp_data, cls=EnhancedJSONEncoder))
+
+
+    def plot(self):
+        Plotting.plot_body_comp()
+
         
-
-
-    def _get_body_comp_data(self):
+    def _get_body_comp_data(self) -> list:
         wg_comp_data = self._get_weight_gurus_body_comp_data()
         garmin_comp_data = self._get_garmin_data()
         data = wg_comp_data + garmin_comp_data
@@ -51,7 +62,13 @@ def health(args):
 
     health = Health(user_info)
 
-    if args.action == "pull":
-        health.pull_info()
+    if args.pull:
+        print("pulling")
+        health.pull()
 
-    return
+    if args.plot:
+        print("plotting")
+        health.plot()
+
+
+    return EXIT_SUCCESS

@@ -1,3 +1,5 @@
 sphinx
 numpy
 cloudscraper
+matplotlib
+pandas
