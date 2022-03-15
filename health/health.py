@@ -5,8 +5,6 @@ import json
 import datetime
 import dataclasses
 
-from matplotlib.font_manager import json_dump
-
 # third party
 
 # this package
@@ -70,7 +68,7 @@ class Health:
     def _get_heart_rate_data(self):
         data = self._get_garmin_hr_data()
         return data
-    
+
     def _get_garmin_hr_data(self):
         garmin_user_info = self.user_info["garmin"]
         garmin = Garmin(garmin_user_info["username"], garmin_user_info["password"])
@@ -78,9 +76,7 @@ class Health:
         data_list = []
         for i in range(0, 1300):
             date = (datetime.date.today() - datetime.timedelta(i)).isoformat()
-            data = garmin.get_heart_rates(
-                date
-            )
+            data = garmin.get_heart_rates(date)
             data_list.append(data)
 
         return data_list

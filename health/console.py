@@ -34,7 +34,14 @@ def _parse_args():
         nargs="?",
         const="weight",
         default=False,
-        choices=["weight", "muscle-mass", "body-fat", "body-comp", "heart-rate", "activites"],
+        choices=[
+            "weight",
+            "muscle-mass",
+            "body-fat",
+            "body-comp",
+            "heart-rate",
+            "activites",
+        ],
         help="pull and health information",
     )
     args = parser.parse_args()

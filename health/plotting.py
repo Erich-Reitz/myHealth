@@ -1,11 +1,14 @@
 """Plotting for tool"""
 
-import json
-import math
-import math
+# standard library
+
+
+# third party
 import matplotlib.pyplot as plt
 import pandas as pd
 
+# this package
+from health import helpers
 
 class Plotting:
     def __init__(self):
@@ -15,17 +18,16 @@ class Plotting:
     @property
     def heart_rate_data(self):
         if self._heart_rate_data is None:
-            self._heart_rate_data = self._load_heart_rate_data()
-        
+            self._heart_rate_data = helpers.load_json("heart-rate.json")
+
         return self._heart_rate_data
 
     @property
     def body_comp_data(self):
         if self._body_comp_data is None:
-            self._body_comp_data = self._load_body_comp_data()
-        
-        return self._body_comp_data
+            self._body_comp_data = helpers.load_json("body-comp.json")
 
+        return self._body_comp_data
 
     def plot(self, command):
         if command == "weight":
@@ -40,17 +42,9 @@ class Plotting:
 
         if command == "body-comp":
             self._plot_body_comp()
-        
+
         if command == "heart-rate":
             self._plot_resting_heart_rate()
-
-    def _load_body_comp_data(self):
-        with open("body-comp.json") as body_comp:
-            return json.load(body_comp)
-    
-    def _load_heart_rate_data(self):
-        with open("heart-rate.json") as heart_rate:
-            return json.load(heart_rate)
 
     def _plot_body_comp(self):
         body_comp_df = pd.DataFrame(self.body_comp_data)
@@ -60,12 +54,8 @@ class Plotting:
 
         body_fat = body_comp_df["body_fat"]
         weight = body_comp_df["weight"]
-        # find first index of not NaN in all sequences of data
-        start_indx = 0
-        for index, (bf_data, w_data) in enumerate(zip(body_fat, weight)):
-            if not math.isnan(bf_data) and not math.isnan(w_data):
-                start_indx = index
-                break
+
+        start_indx = helpers.first_index_not_all_nan(body_fat, weight)
 
         fig, ax1 = plt.subplots()
         ax1.plot(date[start_indx:], body_fat[start_indx:], color="red")
@@ -143,4 +133,4 @@ class Plotting:
         plt.plot(date, hr)
         plt.ylabel("Heart rate (bpm)")
         plt.xlabel("Date Y/M")
-        plt.show()   
+        plt.show()

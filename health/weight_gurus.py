@@ -15,8 +15,6 @@ class WeightGurus:
         self.login_data = {"email": username, "password": password, "web": True}
         self.headers = None
         self.start_date = "start=1970-01-01T01:00:00.504Z"
-        self.weight_history = None
-        self.add_weight = {}
 
     def __do_login(self):
         req = requests.post(
