@@ -368,10 +368,12 @@ class Garmin:
         """Fetch available heart rates data 'cDate' format 'YYYY-mm-dd'."""
 
         url = f"{self.garmin_connect_heartrates_daily_url}/{self.display_name}"
+      
         params = {"date": str(cdate)}
         LOGGER.debug("Requesting heart rates")
 
-        return self.modern_rest_client.get(url, params=params).json()
+        data = self.modern_rest_client.get(url, params=params).json()
+        return data
 
     def get_stats_and_body(self, cdate):
         """Return activity data and body composition (compat for garminconnect)."""

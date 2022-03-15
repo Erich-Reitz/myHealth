@@ -5,6 +5,8 @@ import json
 import datetime
 import dataclasses
 
+from matplotlib.font_manager import json_dump
+
 # third party
 
 # this package
@@ -26,11 +28,17 @@ class Health:
     def __init__(self, user_info) -> None:
         self.user_info = user_info
 
-    def pull(self):
-        body_comp_data = self._get_body_comp_data()
-        body_comp_data.sort(key=lambda body_comp: body_comp.date, reverse=False)
-        with open("body-comp.json", "w+") as json_file:
-            json_file.write(json.dumps(body_comp_data, cls=EnhancedJSONEncoder))
+    def pull(self, command):
+        if command == "body-comp":
+            body_comp_data = self._get_body_comp_data()
+            body_comp_data.sort(key=lambda body_comp: body_comp.date, reverse=False)
+            with open("body-comp.json", "w+") as json_file:
+                json_file.write(json.dumps(body_comp_data, cls=EnhancedJSONEncoder))
+
+        if command == "heart-rate":
+            heart_rate_data = self._get_heart_rate_data()
+            with open("heart-rate.json", "w+") as json_file:
+                json_file.write(json.dumps(heart_rate_data, cls=EnhancedJSONEncoder))
 
     def plot(self, command):
         plotter = Plotting()
@@ -38,11 +46,11 @@ class Health:
 
     def _get_body_comp_data(self) -> list:
         wg_comp_data = self._get_weight_gurus_body_comp_data()
-        garmin_comp_data = self._get_garmin_data()
+        garmin_comp_data = self._get_garmin_body_comp_data()
         data = wg_comp_data + garmin_comp_data
         return data
 
-    def _get_garmin_data(self):
+    def _get_garmin_body_comp_data(self):
         garmin_user_info = self.user_info["garmin"]
         garmin = Garmin(garmin_user_info["username"], garmin_user_info["password"])
         garmin.login()
@@ -59,6 +67,24 @@ class Health:
         data = weight_gurus.get_all()
         return data
 
+    def _get_heart_rate_data(self):
+        data = self._get_garmin_hr_data()
+        return data
+    
+    def _get_garmin_hr_data(self):
+        garmin_user_info = self.user_info["garmin"]
+        garmin = Garmin(garmin_user_info["username"], garmin_user_info["password"])
+        garmin.login()
+        data_list = []
+        for i in range(0, 1300):
+            date = (datetime.date.today() - datetime.timedelta(i)).isoformat()
+            data = garmin.get_heart_rates(
+                date
+            )
+            data_list.append(data)
+
+        return data_list
+
 
 def health(args):
     with open("user_info.json") as user_info:
@@ -67,7 +93,7 @@ def health(args):
     health = Health(user_info)
 
     if args.pull:
-        health.pull()
+        health.pull(args.pull)
 
     if args.plot:
         health.plot(args.plot)
