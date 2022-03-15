@@ -42,7 +42,7 @@ class Plotting:
             self._plot_body_comp()
         
         if command == "heart-rate":
-            self._plot_heart_rate()
+            self._plot_resting_heart_rate()
 
     def _load_body_comp_data(self):
         with open("body-comp.json") as body_comp:
@@ -133,15 +133,12 @@ class Plotting:
         plt.xlabel("Date Y/M")
         plt.show()
 
-    def _plot_heart_rate(self):
+    def _plot_resting_heart_rate(self):
         heart_rate_df = pd.DataFrame(self.heart_rate_data)
         heart_rate_df["calendarDate"] = pd.to_datetime(heart_rate_df["calendarDate"])
 
-
         date = heart_rate_df["calendarDate"]
-        print(date)
         hr = heart_rate_df["restingHeartRate"]
-        print(hr)
 
         plt.plot(date, hr)
         plt.ylabel("Heart rate (bpm)")
