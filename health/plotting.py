@@ -9,10 +9,25 @@ import pandas as pd
 
 class Plotting:
     def __init__(self):
-        self.body_comp_data = None
+        self._body_comp_data = None
+        self._heart_rate_data = None
+
+    @property
+    def heart_rate_data(self):
+        if self._heart_rate_data is None:
+            self._heart_rate_data = self._load_heart_rate_data()
+        
+        return self._heart_rate_data
+
+    @property
+    def body_comp_data(self):
+        if self._body_comp_data is None:
+            self._body_comp_data = self._load_body_comp_data()
+        
+        return self._body_comp_data
+
 
     def plot(self, command):
-        self._load_body_comp_data()
         if command == "weight":
             self._plot_weight()
 
@@ -25,10 +40,17 @@ class Plotting:
 
         if command == "body-comp":
             self._plot_body_comp()
+        
+        if command == "heart-rate":
+            self._plot_resting_heart_rate()
 
     def _load_body_comp_data(self):
         with open("body-comp.json") as body_comp:
-            self.body_comp_data = json.load(body_comp)
+            return json.load(body_comp)
+    
+    def _load_heart_rate_data(self):
+        with open("heart-rate.json") as heart_rate:
+            return json.load(heart_rate)
 
     def _plot_body_comp(self):
         body_comp_df = pd.DataFrame(self.body_comp_data)
@@ -70,6 +92,7 @@ class Plotting:
 
     def _plot_muscle_mass_as_percentage(self):
         body_comp_df = pd.DataFrame(self.body_comp_data)
+        print(body_comp_df)
         body_comp_df["date"] = pd.to_datetime(body_comp_df["date"])
 
         date = body_comp_df["date"]
@@ -109,3 +132,15 @@ class Plotting:
         plt.ylabel("Body Fat (%)")
         plt.xlabel("Date Y/M")
         plt.show()
+
+    def _plot_resting_heart_rate(self):
+        heart_rate_df = pd.DataFrame(self.heart_rate_data)
+        heart_rate_df["calendarDate"] = pd.to_datetime(heart_rate_df["calendarDate"])
+
+        date = heart_rate_df["calendarDate"]
+        hr = heart_rate_df["restingHeartRate"]
+
+        plt.plot(date, hr)
+        plt.ylabel("Heart rate (bpm)")
+        plt.xlabel("Date Y/M")
+        plt.show()   
