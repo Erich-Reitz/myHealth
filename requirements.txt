@@ -3,3 +3,5 @@ numpy
 cloudscraper
 matplotlib
 pandas
+pytest
+pytest-cov
