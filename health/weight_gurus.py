@@ -16,7 +16,7 @@ class WeightGurus:
         self.headers = None
         self.start_date = "start=1970-01-01T01:00:00.504Z"
 
-    def __do_login(self):
+    def _do_login(self):
         req = requests.post(
             "https://api.weightgurus.com/v3/account/login", data=self.login_data
         )
@@ -26,7 +26,7 @@ class WeightGurus:
         except Exception as e:
             print(f"Caught Exception reading JSON: {e}")
 
-    def __get_weight_history(self, start_date=None):
+    def _get_weight_history(self, start_date=None):
         if start_date:
             self.start_date = f"start={start_date}"
         req = requests.get(
@@ -41,9 +41,9 @@ class WeightGurus:
         return json_data
 
     def get_all(self):
-        self.__do_login()
+        self._do_login()
         data = []
-        operations = self.__get_weight_history()["operations"]
+        operations = self._get_weight_history()["operations"]
         operations = self._clean_operations(operations)
         for operation in operations:
             body_data: BodyCompData = self._parse_operation(operation)

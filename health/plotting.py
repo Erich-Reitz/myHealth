@@ -10,6 +10,7 @@ import pandas as pd
 # this package
 from health import helpers
 
+
 class Plotting:
     def __init__(self):
         self._body_comp_data = None
