@@ -5,6 +5,7 @@ class HealthError(Exception):
 class UnknownBehavior(HealthError):
     """Raise exception when requesting something unknown"""
 
+
 class GarminConnectConnectionError(HealthError):
     """Raised when communication ended in error."""
 

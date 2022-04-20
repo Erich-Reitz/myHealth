@@ -24,10 +24,12 @@
 # -*- coding: utf-8 -*-
 """Python 3 API wrapper for Garmin Connect to get your statistics."""
 # standard library
+import datetime
 import json
 import logging
 import re
 from typing import Any, Dict
+import requests
 
 # third party
 import cloudscraper
@@ -153,13 +155,11 @@ class Garmin:
         self.garmin_connect_login_url = self.garmin_connect_base_url + "/en-US/signin"
         self.garmin_connect_sso_login = "signin"
 
-
         self.garmin_connect_weight_url = "proxy/weight-service/weight/dateRange"
 
         self.garmin_connect_daily_sleep_url = (
             "proxy/wellness-service/wellness/dailySleepData"
         )
-
 
         self.garmin_connect_rhr = "proxy/userstats-service/wellness/daily"
 
@@ -306,9 +306,9 @@ class Garmin:
 
     def get_body_composition(self, startdate: str, enddate=None):
         """Return available body composition data for 'startdate' format 'YYYY-mm-dd' through enddate 'YYYY-mm-dd'."""
-
+        print(startdate)
         if enddate is None:
-            enddate = startdate
+            enddate = datetime.datetime.now().strftime("%Y-%m-%d")
         url = self.garmin_connect_weight_url
         params = {"startDate": str(startdate), "endDate": str(enddate)}
         LOGGER.debug("Requesting body composition")
@@ -396,5 +396,3 @@ class Garmin:
         """Log user out of session."""
 
         self.modern_rest_client.get(self.garmin_connect_logout)
-
-

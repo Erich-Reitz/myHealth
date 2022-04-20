@@ -40,10 +40,10 @@ class WeightGurus:
             json_data = None
         return json_data
 
-    def get_all(self):
+    def get_all(self, startdate: str):
         self._do_login()
         data = []
-        operations = self._get_weight_history()["operations"]
+        operations = self._get_weight_history(startdate)["operations"]
         operations = self._clean_operations(operations)
         for operation in operations:
             body_data: BodyCompData = self._parse_operation(operation)
