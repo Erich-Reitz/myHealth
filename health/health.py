@@ -38,6 +38,11 @@ class Health:
             with open("heart-rate.json", "w+") as json_file:
                 json_file.write(json.dumps(heart_rate_data, cls=EnhancedJSONEncoder))
 
+        if command == "activites":
+            activites = self._get_activites()
+            with open("activities.json", "w+") as json_file:
+                json_file.write(json.dumps(activites, cls=EnhancedJSONEncoder))
+
     def plot(self, command):
         plotter = Plotting()
         plotter.plot(command)
@@ -76,10 +81,22 @@ class Health:
         data_list = []
         for i in range(0, 1300):
             date = (datetime.date.today() - datetime.timedelta(i)).isoformat()
+            print(date)
             data = garmin.get_heart_rates(date)
             data_list.append(data)
 
         return data_list
+
+    def _get_activites(self):
+        garmin_user_info = self.user_info["garmin"]
+        garmin = Garmin(garmin_user_info["username"], garmin_user_info["password"])
+        garmin.login()
+        start = (datetime.date.today() - datetime.timedelta(1000)).isoformat()
+        activities = garmin.get_activities_by_date(
+            start, datetime.date.today(), "running"
+        )
+
+        return activities
 
 
 def health(args):

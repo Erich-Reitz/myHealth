@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 # this package
+from health import data_models
 from health import helpers
 
 
@@ -125,12 +126,15 @@ class Plotting:
         plt.show()
 
     def _plot_resting_heart_rate(self):
-        heart_rate_df = pd.DataFrame(self.heart_rate_data)
+        data = helpers.load_json("heart-rate.json")
+        heart_rate_data = data_models.clean_heart_rate_data(data)
+        # print(heart_rate_data)
+
+        heart_rate_df = pd.DataFrame(heart_rate_data)
         heart_rate_df["calendarDate"] = pd.to_datetime(heart_rate_df["calendarDate"])
 
         date = heart_rate_df["calendarDate"]
-        hr = heart_rate_df["restingHeartRate"]
-
+        hr = heart_rate_df["restingHeartRate"].interpolate(method="cubic")
         plt.plot(date, hr)
         plt.ylabel("Heart rate (bpm)")
         plt.xlabel("Date Y/M")

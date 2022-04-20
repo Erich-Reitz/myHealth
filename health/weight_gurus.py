@@ -3,7 +3,7 @@ from datetime import datetime
 
 # third party
 import requests
-from numpy import NaN
+from cmath import nan
 
 # this package
 from health.data_models import BodyCompData
@@ -116,11 +116,11 @@ class WeightGurus:
         try:
             whole_number = int(number[:-1])
         except ValueError:
-            return NaN
+            return nan
 
         try:
             decimal_point = int(number[-1]) / 10
         except ValueError:
-            return NaN
+            return nan
 
         return whole_number + decimal_point
