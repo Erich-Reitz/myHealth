@@ -6,7 +6,7 @@
     - [x] Get data from WeightGurus
     - [x] Get body composition data from Garmin
     - [x] Plot weight
-    - [] Plot more forms of body composition
+    - [X] Plot more forms of body composition
     - [] Learn to plot the above together nicely
     - [] Export more health data from Garmin (heart rate, sleep)
     - [] Export activity data from Garmin

@@ -3,7 +3,7 @@ from datetime import datetime
 
 # third party
 import requests
-from numpy import NaN
+from cmath import nan
 
 # this package
 from health.data_models import BodyCompData
@@ -40,10 +40,10 @@ class WeightGurus:
             json_data = None
         return json_data
 
-    def get_all(self):
+    def get_all(self, startdate: str):
         self._do_login()
         data = []
-        operations = self._get_weight_history()["operations"]
+        operations = self._get_weight_history(startdate)["operations"]
         operations = self._clean_operations(operations)
         for operation in operations:
             body_data: BodyCompData = self._parse_operation(operation)
@@ -116,11 +116,11 @@ class WeightGurus:
         try:
             whole_number = int(number[:-1])
         except ValueError:
-            return NaN
+            return nan
 
         try:
             decimal_point = int(number[-1]) / 10
         except ValueError:
-            return NaN
+            return nan
 
         return whole_number + decimal_point
