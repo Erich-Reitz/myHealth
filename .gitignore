@@ -44,6 +44,8 @@ nosetests.xml
 coverage.xml
 *,cover
 .hypothesis/
+.pytest_cache/
+
 
 # Translations
 *.mo
@@ -90,7 +92,7 @@ ENV/
 .ropeproject
 
 # mypy
-.mypy_cache/
+.mypy_cache/3.8
 
 # Personal info
 user_info.json
