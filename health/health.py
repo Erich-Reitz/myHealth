@@ -31,9 +31,18 @@ class Health:
         """Return available body composition data for 'startdate' format 'YYYY-mm-dd' through enddate 'YYYY-mm-dd'."""
         wg_comp_data = self._get_weight_gurus_body_comp_data(startdate)
         garmin_comp_data = self._get_garmin_body_comp_data(startdate)
-        print(garmin_comp_data)
         data = wg_comp_data + garmin_comp_data
-        return json.dumps(data, cls=EnhancedJSONEncoder)
+        data.sort(key=lambda body_comp: body_comp.date, reverse=False)
+        return data
+
+    def get_activities(self, activity_type: str, start_date: str, end_date=None):
+        if not end_date:
+            end_date = datetime.date.today().isoformat()
+        garmin = Garmin(self.garmin_username, self.garmin_password)
+        garmin.login()
+        activities = garmin.get_activities_by_date(start_date, end_date, activity_type)
+
+        return activities
 
     def _get_garmin_body_comp_data(self, startdate, enddate=None):
         garmin = Garmin(self.garmin_username, self.garmin_password)
@@ -60,13 +69,3 @@ class Health:
             data_list.append(data)
 
         return data_list
-
-    def _get_activites(self):
-        garmin = Garmin(self.garmin_username, self.garmin_password)
-        garmin.login()
-        start = (datetime.date.today() - datetime.timedelta(1000)).isoformat()
-        activities = garmin.get_activities_by_date(
-            start, datetime.date.today(), "running"
-        )
-
-        return activities
