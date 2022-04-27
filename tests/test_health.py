@@ -1,11 +1,6 @@
 # standard library
 import unittest
 
-# this package
-from health import health
-
-
-
 class TestHealth(unittest.TestCase):
     """Basic test cases."""
 

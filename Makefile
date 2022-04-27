@@ -11,5 +11,5 @@ lint:
 	pylint health/
 
 test:
-	pytest --cov-report term-missing -s --cov=health tests/
+	python3 -m pytest --cov-report term-missing -s --cov=health tests/
 
