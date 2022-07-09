@@ -206,6 +206,7 @@ class Garmin:
         """Login to Garmin Connect."""
 
         LOGGER.debug("login: %s %s", self.username, self.password)
+        LOGGER.info("Logging in to Garmin Connect...")
         get_headers = {"Referer": self.garmin_connect_login_url}
         params = {
             "service": self.modern_rest_client.url(),
@@ -306,6 +307,7 @@ class Garmin:
 
     def get_body_composition(self, startdate: str, enddate=None) -> List[BodyCompData]:
         """Return available body composition data for 'startdate' format 'YYYY-mm-dd' through enddate 'YYYY-mm-dd'."""
+        LOGGER.info("Requesting body composition data")
         if enddate is None:
             enddate = datetime.datetime.now().strftime("%Y-%m-%d")
         url = self.garmin_connect_weight_url
@@ -347,7 +349,7 @@ class Garmin:
 
         url = self.garmin_connect_activities
         params = {"start": str(start), "limit": str(limit)}
-        LOGGER.debug("Requesting activities")
+        LOGGER.info("Requesting activities")
 
         return self.modern_rest_client.get(url, params=params).json()
 
@@ -361,7 +363,7 @@ class Garmin:
                              multi_sport, fitness_equipment, hiking, walking, other]
         :return: list of JSON activities
         """
-
+        LOGGER.info("Requesting activities of type %s", activitytype)
         activities = []
         start = 0
         limit = 20

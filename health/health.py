@@ -14,9 +14,11 @@ from health.garmin import Garmin
 
 
 # INIT LOGGER THAT PRINTS DEBUG MESSAGES
+logFormat = "%(asctime)s: %(levelname)s: %(message)s"
+logging.basicConfig(format=logFormat, level=logging.INFO)
 LOGGER = logging.getLogger("main")
 LOGGER.addHandler(logging.StreamHandler())
-LOGGER.setLevel(logging.DEBUG)
+
 
 
 class Health:
@@ -26,7 +28,7 @@ class Health:
         self.wg_username = user_info["weight-gurus"]["username"]
         self.wg_password = user_info["weight-gurus"]["password"]
 
-    def get_body_comp_data(self, startdate: str) -> list:
+    def get_body_comp_data(self, startdate: str) -> List[BodyCompData]:
         """Return available body composition data for 'startdate' format 'YYYY-mm-dd' through enddate 'YYYY-mm-dd'."""
         wg_comp_data = self._get_weight_gurus_body_comp_data(startdate)
         garmin_comp_data = self._get_garmin_body_comp_data(startdate)
@@ -49,12 +51,12 @@ class Health:
         data = garmin.get_body_composition(startdate)
         return data
 
-    def _get_weight_gurus_body_comp_data(self, startdate: str):
+    def _get_weight_gurus_body_comp_data(self, startdate: str) -> List[BodyCompData]:
         weight_gurus = WeightGurus(self.wg_username, self.wg_password)
         data = weight_gurus.get_all(startdate)
         return data
 
-    def get_heart_rate_data(self, startdate: str) -> str:
+    def get_heart_rate_data(self, startdate: str) -> list:
         data = self._get_garmin_hr_data(startdate)
         return data
 
