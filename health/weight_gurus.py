@@ -1,9 +1,9 @@
 # standard library
 from datetime import datetime
+from typing import List
 
 # third party
 import requests
-from cmath import nan
 
 # this package
 from health.data_models import BodyCompData
@@ -40,7 +40,7 @@ class WeightGurus:
             json_data = None
         return json_data
 
-    def get_all(self, startdate: str):
+    def get_all(self, startdate: str) -> List[BodyCompData]:
         self._do_login()
         data = []
         operations = self._get_weight_history(startdate)["operations"]
@@ -116,11 +116,11 @@ class WeightGurus:
         try:
             whole_number = int(number[:-1])
         except ValueError:
-            return nan
+            return -1
 
         try:
             decimal_point = int(number[-1]) / 10
         except ValueError:
-            return nan
+            return -1
 
         return whole_number + decimal_point

@@ -1,9 +1,10 @@
 """Main logic for tool"""
 
 # standard library
-import json
 import datetime
-import dataclasses
+import logging
+from typing import List
+from health.data_models import BodyCompData
 
 # third party
 
@@ -12,12 +13,10 @@ from health.weight_gurus import WeightGurus
 from health.garmin import Garmin
 
 
-# pylint: disable=E0202
-class EnhancedJSONEncoder(json.JSONEncoder):
-    def default(self, o):
-        if dataclasses.is_dataclass(o):
-            return dataclasses.asdict(o)
-        return super().default(o)
+# INIT LOGGER THAT PRINTS DEBUG MESSAGES
+LOGGER = logging.getLogger("main")
+LOGGER.addHandler(logging.StreamHandler())
+LOGGER.setLevel(logging.DEBUG)
 
 
 class Health:
@@ -27,7 +26,7 @@ class Health:
         self.wg_username = user_info["weight-gurus"]["username"]
         self.wg_password = user_info["weight-gurus"]["password"]
 
-    def get_body_comp_data(self, startdate: str) -> str:
+    def get_body_comp_data(self, startdate: str) -> list:
         """Return available body composition data for 'startdate' format 'YYYY-mm-dd' through enddate 'YYYY-mm-dd'."""
         wg_comp_data = self._get_weight_gurus_body_comp_data(startdate)
         garmin_comp_data = self._get_garmin_body_comp_data(startdate)
@@ -35,7 +34,7 @@ class Health:
         data.sort(key=lambda body_comp: body_comp.date, reverse=False)
         return data
 
-    def get_activities(self, activity_type: str, start_date: str, end_date=None):
+    def get_activities(self, activity_type: str, start_date: str, end_date=None) -> list:
         if not end_date:
             end_date = datetime.date.today().isoformat()
         garmin = Garmin(self.garmin_username, self.garmin_password)
@@ -44,7 +43,7 @@ class Health:
 
         return activities
 
-    def _get_garmin_body_comp_data(self, startdate, enddate=None):
+    def _get_garmin_body_comp_data(self, startdate, enddate=None) -> List[BodyCompData]:
         garmin = Garmin(self.garmin_username, self.garmin_password)
         garmin.login()
         data = garmin.get_body_composition(startdate)
@@ -55,11 +54,12 @@ class Health:
         data = weight_gurus.get_all(startdate)
         return data
 
-    def get_heart_rate_data(self):
-        data = self._get_garmin_hr_data()
+    def get_heart_rate_data(self, startdate: str) -> str:
+        data = self._get_garmin_hr_data(startdate)
         return data
 
-    def _get_garmin_hr_data(self):
+    def _get_garmin_hr_data(self, startdate: str):
+        # TODO: implement using startdate
         garmin = Garmin(self.garmin_username, self.garmin_password)
         garmin.login()
         data_list = []

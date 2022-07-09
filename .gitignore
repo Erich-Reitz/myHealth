@@ -96,3 +96,5 @@ ENV/
 
 # Personal info
 user_info.json
+pulledData
+

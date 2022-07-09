@@ -2,7 +2,7 @@ init:
 	pip install -r requirements.txt
 
 run:
-	python -m health.main $(ARGS)
+	python3 -m health.main $(ARGS)
 
 format:
 	black health/

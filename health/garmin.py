@@ -28,7 +28,7 @@ import datetime
 import json
 import logging
 import re
-from typing import Any, Dict
+from typing import Any, Dict, List
 import requests
 
 # third party
@@ -42,7 +42,7 @@ from health.exceptions import (
     GarminConnectAuthenticationError,
 )
 
-LOGGER = logging.getLogger(__name__)
+LOGGER = logging.getLogger("main")
 
 
 class ApiClient:
@@ -304,14 +304,12 @@ class Garmin:
         data = self.modern_rest_client.get(url, params=params).json()
         return data
 
-    def get_body_composition(self, startdate: str, enddate=None):
+    def get_body_composition(self, startdate: str, enddate=None) -> List[BodyCompData]:
         """Return available body composition data for 'startdate' format 'YYYY-mm-dd' through enddate 'YYYY-mm-dd'."""
-        print(startdate)
         if enddate is None:
             enddate = datetime.datetime.now().strftime("%Y-%m-%d")
         url = self.garmin_connect_weight_url
         params = {"startDate": str(startdate), "endDate": str(enddate)}
-        LOGGER.debug("Requesting body composition")
 
         data = self.modern_rest_client.get(url, params=params).json()
         weight_list = data["dateWeightList"]
@@ -379,7 +377,6 @@ class Garmin:
         if activitytype:
             params["activityType"] = str(activitytype)
 
-        print(f"Requesting activities by date from {startdate} to {enddate}")
         while True:
             params["start"] = str(start)
             LOGGER.debug(f"Requesting activities {start} to {start+limit}")
